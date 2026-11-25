@@ -1,0 +1,22 @@
+{
+ "capa_titulo": ["MAIS PORTAS", "NO SEU", "NOTEBOOK"],
+ "titulo_tela": "Hub USB 4 em 1",
+ "busca": "hub usb 4 em 1",
+ "beneficios": ["4 em 1: mais entradas para notebook e tablet", "Corpo em liga de alumínio", "Até 5 Gbps e suporte a carregamento rápido PD"],
+ "views": {"principal": [0.5, 0.03, 1.0, 0.53], "produto2": [0.47, 0.36, 1.0, 0.89], "velocidade": [0.0, 0.52, 0.5, 0.86], "full": null},
+ "frases": [
+  {"cena": "hook", "tela": ["POUCAS", "PORTAS USB?"], "fala": "Seu notebook tem pouca entrada USB?",
+   "legenda": "Seu notebook tem pouca entrada USB?"},
+  {"cena": "problema", "itens": ["Tira e põe cabo", "Falta entrada"],
+   "fala": "Aí fica aquele tira e põe de cabo o dia inteiro.",
+   "legenda": "Aí fica aquele tira e põe de cabo o dia inteiro."},
+  {"cena": "solucao", "rotulo": "A SOLUÇÃO", "tela": ["HUB USB 4 EM 1"], "sub": "Notebook e tablet",
+   "fala": "Com esse hub USB quatro em um, você conecta mais coisas no notebook ou no tablet.",
+   "legenda": "Com esse hub USB 4 em 1 você conecta mais coisas no notebook ou tablet."},
+  {"cena": "detalhe", "itens": [["principal", "Liga de alumínio"], ["velocidade", "Até 5 Gbps"], ["produto2", "Carregamento rápido PD"]],
+   "fala": "Corpo em alumínio, até cinco gigabits por segundo e suporte a carregamento rápido.",
+   "legenda": "Corpo em alumínio, até 5 Gbps e carregamento rápido."},
+  {"cena": "preco"},
+  {"cena": "cta", "fala": "Confira no link da bio!", "legenda": "Confira no link da bio!"}
+ ]
+}

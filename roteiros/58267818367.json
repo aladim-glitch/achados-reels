@@ -1,0 +1,22 @@
+{
+ "capa_titulo": ["VITAMINA C", "POR MENOS", "DE R$ 16"],
+ "titulo_tela": "Sérum Vitamina C Dermachem",
+ "busca": "sérum vitamina c",
+ "beneficios": ["Sérum de vitamina C Dermachem, 30 ml", "Segundo a marca: ilumina e revitaliza a pele"],
+ "views": {"principal": [0.27, 0.0, 0.8, 1.0], "rotulo": [0.3, 0.44, 0.76, 0.9], "gotas": [0.3, 0.0, 0.74, 0.44], "frasco": [0.29, 0.18, 0.78, 0.67]},
+ "frases": [
+  {"cena": "hook", "tela": ["PELE SEM", "BRILHO?"], "fala": "Pele sem brilho e com cara de cansada?",
+   "legenda": "Pele sem brilho e com cara de cansada?"},
+  {"cena": "problema", "itens": ["Pele opaca", "Aspecto cansado"],
+   "fala": "Aquela pele opaca, que nem a maquiagem disfarça?",
+   "legenda": "Aquela pele opaca que nem a maquiagem disfarça?"},
+  {"cena": "solucao", "rotulo": "OLHA ISSO", "tela": ["SÉRUM", "VITAMINA C"], "sub": "Dermachem • 30 ml",
+   "fala": "Esse é o sérum de vitamina C da Dermachem, com trinta mililitros.",
+   "legenda": "Sérum de vitamina C da Dermachem, 30 ml."},
+  {"cena": "detalhe", "itens": [["gotas", "Conta-gotas"], ["rotulo", "Ilumina"], ["frasco", "Revitaliza"]],
+   "fala": "Segundo a marca, ele ilumina e revitaliza a pele, com aplicação em gotas.",
+   "legenda": "Segundo a marca, ilumina e revitaliza a pele."},
+  {"cena": "preco"},
+  {"cena": "cta", "fala": "Confira no link da bio!", "legenda": "Confira no link da bio!"}
+ ]
+}

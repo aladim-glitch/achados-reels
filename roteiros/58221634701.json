@@ -1,0 +1,22 @@
+{
+ "capa_titulo": ["BANHEIRO", "ORGANIZADO", "SEM FURAR"],
+ "titulo_tela": "Kit banheiro 5 peças inox",
+ "busca": "kit banheiro inox",
+ "beneficios": ["5 peças: toalheiro, suporte de papel higiênico e ganchos", "Aço inox 304", "Instalação sem furar a parede"],
+ "views": {"principal": null, "argola": [0.0, 0.04, 0.52, 0.56], "papel": [0.0, 0.40, 0.56, 0.96], "ganchos": [0.55, 0.12, 1.0, 0.57]},
+ "frases": [
+  {"cena": "hook", "tela": ["SEM FURAR", "A PAREDE!"], "fala": "Organize o banheiro sem furar a parede!",
+   "legenda": "Organize o banheiro sem furar a parede!"},
+  {"cena": "problema", "itens": ["Toalha jogada", "Papel sem lugar", "Nada pra pendurar"],
+   "fala": "Toalha jogada, papel higiênico sem lugar e nenhum gancho pra pendurar nada?",
+   "legenda": "Toalha jogada, papel sem lugar e nenhum gancho?"},
+  {"cena": "solucao", "rotulo": "A SOLUÇÃO", "tela": ["KIT 5 PEÇAS"], "sub": "Aço inox 304",
+   "fala": "Esse kit resolve: são cinco peças em aço inox trezentos e quatro.",
+   "legenda": "Esse kit resolve: 5 peças em aço inox 304."},
+  {"cena": "detalhe", "itens": [["argola", "Toalheiro"], ["papel", "Suporte de papel"], ["ganchos", "Ganchos"], ["principal", "Instala sem furar"]],
+   "fala": "Tem toalheiro, suporte de papel higiênico, ganchos, e a instalação é sem furação.",
+   "legenda": "Toalheiro, suporte de papel, ganchos e instalação sem furação."},
+  {"cena": "preco"},
+  {"cena": "cta", "fala": "Confira no link da bio!", "legenda": "Confira no link da bio!"}
+ ]
+}

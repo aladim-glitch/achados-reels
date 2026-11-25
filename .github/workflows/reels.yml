@@ -1,0 +1,63 @@
+# Renderiza os 3 Reels do dia e entrega ao Make (que publica nos horarios 08h/12h/19h).
+# ATENCAO: o agendamento (schedule) fica desligado ate a aprovacao do video de teste.
+name: Reels diarios
+
+on:
+  workflow_dispatch:
+    inputs:
+      data:
+        description: "Data (AAAA-MM-DD); vazio = hoje"
+        required: false
+  # schedule:
+  #   - cron: "0 9 * * *"   # 06:00 em Brasilia: gera os 3 videos do dia
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reels
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dependencias
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q -r requirements.txt
+      - name: Musicas (Mixkit, baixadas da fonte oficial)
+        run: |
+          for i in 288 801 1147 837 158; do curl -sfL "https://assets.mixkit.co/music/$i/$i.mp3" -o "assets/musica/mixkit-$i.mp3"; done
+      - name: Gerar videos
+        env:
+          TZ: America/Sao_Paulo
+        run: |
+          DATA="${{ github.event.inputs.data }}"; [ -z "$DATA" ] && DATA=$(date +%F)
+          for SLOT in 0 1 2; do python main.py --data "$DATA" --slot $SLOT --registrar; done
+          echo "DATA=$DATA" >> $GITHUB_ENV
+      - name: Publicar arquivos (release do dia)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="reels-$DATA"
+          gh release create "$TAG" --title "Reels $DATA" --notes "Gerado automaticamente" || true
+          for D in saida/${DATA}_*; do
+            H=$(basename "$D" | cut -d_ -f2)
+            cp "$D/reel.mp4" "reel-$H.mp4"; cp "$D/capa.jpg" "capa-$H.jpg"
+            gh release upload "$TAG" "reel-$H.mp4" "capa-$H.jpg" --clobber
+          done
+      - name: Entregar ao Make
+        env:
+          MAKE_WEBHOOK: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_TOKEN: ${{ secrets.MAKE_WEBHOOK_TOKEN }}
+        run: python entregar.py "$DATA"
+      - name: Salvar historico (evita repeticao)
+        run: |
+          git config user.name "achados-bot"; git config user.email "bot@users.noreply.github.com"
+          git add estado/publicados.json && git commit -m "Reels $DATA" && git push || true

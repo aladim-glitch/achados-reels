@@ -1,0 +1,6 @@
+saida/
+__pycache__/
+*.log
+*.err
+# musicas Mixkit: baixadas no workflow (licenca nao permite redistribuir os arquivos)
+assets/musica/*.mp3

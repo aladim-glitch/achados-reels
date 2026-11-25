@@ -1,0 +1,17 @@
+{
+ "titulo_tela": "Divisória de acrílico para guarda-roupa",
+ "busca": "divisória acrílico",
+ "chips": ["Separa as pilhas de roupa", "Transparente: tudo à vista", "Kit com 2, 4 ou 6 peças"],
+ "beneficios": ["Separa as pilhas de roupa na prateleira", "Transparente: você vê tudo sem bagunçar", "Kit com 2, 4 ou 6 peças"],
+ "frases": [
+  {"cena": "hook", "fala": "Seu guarda-roupa vive bagunçado? Olha esse achado da Shopee!",
+   "legenda": "Seu guarda-roupa vive bagunçado? Olha esse achado!"},
+  {"cena": "produto", "fala": "Divisórias de acrílico pra prateleira do guarda-roupa.",
+   "legenda": "Divisórias de acrílico pra prateleira do guarda-roupa."},
+  {"cena": "beneficio", "fala": "Elas separam as pilhas de roupa e, como são transparentes, deixam tudo à vista. Vem em kit de duas, quatro ou seis peças.",
+   "legenda": "Separam as pilhas de roupa e, transparentes, deixam tudo à vista. Kit de 2, 4 ou 6 peças."},
+  {"cena": "preco", "fala": "De duzentos reais por quarenta e quatro e noventa e nove. Setenta e oito por cento de desconto, com nota cinco na Shopee.",
+   "legenda": "De R$ 200 por R$ 44,99. 78% de desconto, nota 5 na Shopee."},
+  {"cena": "cta", "fala": "Confira no link da bio!", "legenda": "Confira no link da bio!"}
+ ]
+}
