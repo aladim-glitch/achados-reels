@@ -1,0 +1,22 @@
+{
+ "capa_titulo": ["CHOCOTTONE", "KIT COM 5", "OFERTA"],
+ "titulo_tela": "Kit 5 Mini Chocottone",
+ "busca": "mini chocottone",
+ "beneficios": ["5 Mini Chocottones Bauducco de 80 g", "Com gotas de chocolate", "Saquinho individual: prático pra lancheira", "Validade até 04/2027"],
+ "views": {"principal": null, "fatia": [0.26, 0.58, 0.72, 0.89], "pacote": [0.12, 0.46, 0.50, 0.86], "kit": [0.68, 0.26, 1.0, 0.76]},
+ "frases": [
+  {"cena": "hook", "tela": ["CHOCOTTONE", "EM OFERTA!"], "fala": "Olha o preço desse Chocottone Bauducco!",
+   "legenda": "Olha o preço desse Chocottone Bauducco!"},
+  {"cena": "problema", "itens": ["Lanche caro", "Lancheira vazia"],
+   "fala": "Lanche da tarde caro e nada gostoso pra levar na lancheira?",
+   "legenda": "Lanche caro e nada gostoso pra lancheira?"},
+  {"cena": "solucao", "rotulo": "A SOLUÇÃO", "tela": ["KIT 5 MINI"], "sub": "Chocottone Bauducco 80 g",
+   "fala": "São cinco Mini Chocottones Bauducco de oitenta gramas cada.",
+   "legenda": "São 5 Mini Chocottones Bauducco de 80 g cada."},
+  {"cena": "detalhe", "itens": [["fatia", "Gotas de chocolate"], ["pacote", "Saquinho individual"], ["kit", "80 g cada"], ["principal", "Validade 04/27"]],
+   "fala": "Com gotas de chocolate, em saquinho individual pra levar fácil, e validade até abril de vinte e sete.",
+   "legenda": "Gotas de chocolate, saquinho individual e validade até 04/27."},
+  {"cena": "preco"},
+  {"cena": "cta", "fala": "Confira no link da bio!", "legenda": "Confira no link da bio!"}
+ ]
+}
