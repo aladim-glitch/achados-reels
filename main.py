@@ -90,9 +90,36 @@ def falar_preco(p):
     }
 
 
+def linhas_titulo(texto, max_chars=12, max_linhas=2):
+    """Quebra o titulo em ate 2 linhas curtas para nao estourar a largura do video."""
+    linhas, atual = [], ""
+    for w in texto.upper().split():
+        if len(atual) + len(w) + (1 if atual else 0) <= max_chars:
+            atual = f"{atual} {w}".strip()
+        else:
+            if atual:
+                linhas.append(atual)
+            if len(linhas) == max_linhas:
+                break
+            atual = w[:max_chars]
+    if atual and len(linhas) < max_linhas:
+        linhas.append(atual)
+    return linhas
+
+
+def titulo_curto(nome, max_chars=24):
+    """Nome curto que cabe numa linha do cabecalho (corta em palavra inteira)."""
+    res = ""
+    for w in nome_curto(nome).split():
+        if len(res) + len(w) + (1 if res else 0) > max_chars:
+            break
+        res = f"{res} {w}".strip()
+    return res or nome[:max_chars]
+
+
 def roteiro_auto(p):
     """Roteiro sem IA: usa so dados verificaveis do catalogo (nada inventado)."""
-    curto = nome_curto(p["nome"])
+    curto = titulo_curto(p["nome"])
     gancho = GANCHOS.get(p["categoria"], "Olha esse achado da Shopee!")
     return {
         "titulo_tela": curto,
@@ -100,7 +127,7 @@ def roteiro_auto(p):
         "beneficios": [],
         "frases": [
             {"cena": "hook", "tela": ["ACHADO", "DO DIA!"], "fala": gancho, "legenda": gancho},
-            {"cena": "solucao", "rotulo": "OLHA ISSO", "tela": [curto.upper()[:22]], "fala": f"{curto}, direto da Shopee.",
+            {"cena": "solucao", "rotulo": "OLHA ISSO", "tela": linhas_titulo(curto), "fala": f"{curto}, direto da Shopee.",
              "legenda": f"{curto}, direto da Shopee."},
             {"cena": "detalhe", "itens": [["principal", f"Nota {p['avaliacao']:.1f}".replace(".", ",") + " de 5"], ["z1", "Achado da Shopee"]],
              "fala": "E com nota " + ("máxima" if p["avaliacao"] >= 4.95 else "alta") + " de quem já comprou.",
