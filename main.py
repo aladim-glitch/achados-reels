@@ -12,6 +12,7 @@ import os
 import re
 
 import selecao
+import story
 import video2
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -200,6 +201,10 @@ def main():
     leg = legenda_instagram(p, r)
     with open(os.path.join(pasta, "legenda.txt"), "w", encoding="utf-8") as f:
         f.write(leg)
+    # Story do Reel: arte + link de afiliado original para a figurinha de link (colada no app)
+    story.gerar_story(p, r, os.path.join(pasta, "story.jpg"))
+    with open(os.path.join(pasta, "link.txt"), "w", encoding="utf-8") as f:
+        f.write(p["link_feed"])
     meta = {"data": str(data), "horario": HORARIOS[a.slot], "produto": p, "roteiro": r, "legenda": leg, **info}
     with open(os.path.join(pasta, "meta.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)

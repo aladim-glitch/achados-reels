@@ -49,9 +49,11 @@ jobs:
           gh release create "$TAG" --title "Reels $DATA" --notes "Gerado automaticamente" || true
           for D in saida/${DATA}_*; do
             H=$(basename "$D" | cut -d_ -f2)
-            cp "$D/reel.mp4" "reel-$H.mp4"; cp "$D/capa.jpg" "capa-$H.jpg"
-            gh release upload "$TAG" "reel-$H.mp4" "capa-$H.jpg" --clobber
+            cp "$D/reel.mp4" "reel-$H.mp4"; cp "$D/capa.jpg" "capa-$H.jpg"; cp "$D/story.jpg" "story-$H.jpg"
+            gh release upload "$TAG" "reel-$H.mp4" "capa-$H.jpg" "story-$H.jpg" --clobber
           done
+          python kit_stories.py "$DATA" > kit.md
+          gh release edit "$TAG" --notes-file kit.md
       - name: Entregar ao Make
         env:
           MAKE_WEBHOOK: ${{ secrets.MAKE_WEBHOOK_URL }}
