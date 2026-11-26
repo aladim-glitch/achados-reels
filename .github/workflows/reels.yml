@@ -9,7 +9,7 @@ on:
         description: "Data (AAAA-MM-DD); vazio = hoje"
         required: false
   schedule:
-    - cron: "0 9 * * *"   # 06:00 em Brasilia: gera os 3 videos do dia
+    - cron: "0 8 * * *"   # 05:00 em Brasilia (folga para atrasos do GitHub): gera os 3 videos do dia
 
 permissions:
   contents: write

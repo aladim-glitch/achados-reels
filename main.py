@@ -57,6 +57,9 @@ def nome_curto(nome, max_palavras=6):
     n = re.split(r"[,|\-–(]", nome)[0]
     n = re.sub(r"^\s*(kit\s+)?[\d/]+\s*(unidades?|peças?|pçs?|un)?\s*", lambda m: "Kit " if m.group(1) else "", n, flags=re.I)
     pal = n.split()
+    # tira conectores/simbolos soltos no fim (ex.: "Relogio Moderno +", "Kit de")
+    while pal and (not re.search(r"\w", pal[-1]) or pal[-1].lower() in {"de", "da", "do", "e", "com", "para", "pra", "+"}):
+        pal.pop()
     return " ".join(pal[:max_palavras]).strip() or nome[:40]
 
 
