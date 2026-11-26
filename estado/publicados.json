@@ -16,5 +16,23 @@
   "data": "2026-11-25",
   "slot": 2,
   "categoria": "Mercado"
+ },
+ {
+  "id": "58221620099",
+  "data": "2026-11-26",
+  "slot": 0,
+  "categoria": "Casa e cozinha"
+ },
+ {
+  "id": "58267818367",
+  "data": "2026-11-26",
+  "slot": 1,
+  "categoria": "Beleza e saúde"
+ },
+ {
+  "id": "58212308864",
+  "data": "2026-11-26",
+  "slot": 2,
+  "categoria": "Moda"
  }
 ]
