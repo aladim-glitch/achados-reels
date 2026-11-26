@@ -21,7 +21,7 @@ concurrency:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -31,6 +31,14 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
           pip install -q -r requirements.txt
+      - name: Cache do modelo de recorte e das cenas
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.u2net
+            .cache_midia
+          key: midia-v1-${{ github.run_id }}
+          restore-keys: midia-v1-
       - name: Musicas (Mixkit, baixadas da fonte oficial)
         run: |
           for i in 288 801 1147 837 158; do curl -sfL "https://assets.mixkit.co/music/$i/$i.mp3" -o "assets/musica/mixkit-$i.mp3"; done
@@ -38,6 +46,7 @@ jobs:
         env:
           TZ: America/Sao_Paulo
           CTA_COMENTARIO: ${{ vars.CTA_COMENTARIO }}
+          PIXABAY_KEY: ${{ secrets.PIXABAY_KEY }}
         run: |
           DATA="${{ github.event.inputs.data }}"; [ -z "$DATA" ] && DATA=$(date +%F)
           for SLOT in 0 1 2; do python main.py --data "$DATA" --slot $SLOT --registrar; done

@@ -73,9 +73,10 @@ def carregar_publicados():
     return []
 
 
-def registrar_publicado(produto, data, slot):
+def registrar_publicado(produto, data, slot, variante=None):
     pub = carregar_publicados()
-    pub.append({"id": produto["id"], "data": str(data), "slot": slot, "categoria": produto["categoria"]})
+    pub.append({"id": produto["id"], "data": str(data), "slot": slot, "categoria": produto["categoria"],
+                "variante": variante or {}})
     os.makedirs(os.path.dirname(PUBLICADOS), exist_ok=True)
     with open(PUBLICADOS, "w", encoding="utf-8") as f:
         json.dump(pub, f, ensure_ascii=False, indent=1)
@@ -93,10 +94,38 @@ def categoria_do_slot(data, slot):
     return CATEGORIAS[(dia * 3 + slot) % len(CATEGORIAS)]
 
 
+# Potencial de viralizacao (heuristica transparente, sem inventar tendencias):
+# utilidade pratica, apelo visual e curiosidade costumam render mais em video do que pecas tecnicas/consumiveis.
+CURIOSIDADE = {
+    "portátil": 6, "portatil": 6, "mini": 5, "magnético": 6, "magnetico": 6, "dobrável": 6, "dobravel": 6,
+    "automático": 6, "automatico": 6, "recarregável": 5, "recarregavel": 5, "led": 5, "sem fio": 5,
+    "multifuncional": 6, "organizador": 7, "organizadora": 7, "suporte": 4, "dispenser": 6, "porta": 3,
+    "luminária": 5, "luminaria": 5, "projetor": 7, "umidificador": 6, "massageador": 6, "aspirador": 6,
+    "mop": 6, "escova": 3, "garrafa": 4, "térmica": 4, "termica": 4, "cortador": 5, "fatiador": 6,
+    "ralador": 4, "lancheira": 4, "kit": 3, "inteligente": 5, "elétrico": 4, "eletrico": 4, "divisória": 5,
+    "divisoria": 5, "ventilador": 5, "relógio": 3, "relogio": 3, "brinquedo": 4, "interativo": 6,
+    "comedouro": 4, "bebedouro": 5, "fonte": 3, "gamer": 4, "rgb": 5, "selfie": 5, "tripé": 4, "tripe": 4,
+}
+SEM_GRACA = {
+    "chave": -6, "sonda": -8, "parafuso": -8, "refil": -6, "peça": -5, "peca": -5, "cabo": -4, "adaptador": -3,
+    "apostila": -8, "etiqueta": -4, "adesivo": -2, "fusível": -8, "fusivel": -8, "junta": -6, "rolamento": -8,
+    "sachê": -3, "sache": -3, "pacote": -2, "unidades": -1,
+}
+
+
+def potencial_viral(nome):
+    n = nome.lower()
+    return sum(v for k, v in CURIOSIDADE.items() if k in n) + sum(v for k, v in SEM_GRACA.items() if k in n)
+
+
 def pontuar(p, ao_vivo):
     nota = p["pontuacao_estimada"]
     # desconto atual diferente do catalogo ajusta a nota
     nota += (ao_vivo["desconto"] - p["desconto_percentual"]) * 0.3
+    nota += potencial_viral(p["nome"]) * 1.5
+    # produto com roteiro proprio (beneficios verificados) rende video melhor
+    if os.path.exists(os.path.join(BASE, "roteiros", f"{p['id']}.json")):
+        nota += 8
     return nota
 
 

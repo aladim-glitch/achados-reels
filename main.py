@@ -11,9 +11,12 @@ import json
 import os
 import re
 
+import aprendizado
+import midia
 import selecao
 import story
 import video2
+import video3
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 HORARIOS = ["08h", "12h", "19h"]
@@ -88,9 +91,10 @@ HASHTAGS = {
 def falar_preco(p):
     """Frase de preco gerada SEMPRE a partir do preco ao vivo (nunca fixa no roteiro)."""
     po, pp, d = p["preco_original"], p["preco_oferta"], p["desconto_percentual"]
+    # beneficio vem antes; aqui o preco entra curto, como "revelacao" no fim
     return {
-        "fala": f"De {preco_falado(po)} por apenas {preco_falado(pp)}! São {extenso(d)} por cento de desconto.",
-        "legenda": f"De {brl(po)} por apenas {brl(pp)}! {d}% de desconto.",
+        "fala": f"E o preço? De {preco_falado(po)}, hoje sai por {preco_falado(pp)}.",
+        "legenda": f"E o preço? De {brl(po)}, hoje sai por {brl(pp)}.",
     }
 
 
@@ -190,20 +194,47 @@ def carregar_roteiro(p):
 
 
 def legenda_instagram(p, r):
+    """Legenda otimizada para busca do Instagram: palavra-chave na 1a linha, beneficio antes do preco,
+    pedido de comentario/salvamento/compartilhamento, direcao para o site e 4 hashtags relevantes."""
     curto = r.get("titulo_tela") or nome_curto(p["nome"])
-    linhas = [f"🧞 {curto}", "",
-              f"💸 De {brl(p['preco_original'])} por {brl(p['preco_oferta'])} ({p['desconto_percentual']}% OFF)",
-              f"⭐ Nota {p['avaliacao']:.1f}".replace(".", ",") + " de 5 na Shopee"]
+    busca = r.get("busca") or " ".join(curto.split()[:3]).lower()
+    seo = r.get("seo") or f"achadinho da Shopee com {p['desconto_percentual']}% OFF"
+    linhas = [f"{curto}: {seo} 🧞", ""]
     for b in r.get("beneficios", []):
         linhas.append(f"✅ {b}")
-    busca = r.get("busca") or " ".join(curto.split()[:3]).lower()
+    linhas += [f"⭐ Nota {p['avaliacao']:.1f}".replace(".", ",") + " de 5 na Shopee",
+               f"💸 Hoje: {brl(p['preco_oferta'])} (antes {brl(p['preco_original'])})", ""]
     if cta_comentario_ligado():
-        linhas += ["", "💬 Comenta QUERO que eu te mando o link no direct!"]
-    linhas += ["", "🛒 Garanta o seu: acesse o link da bio", f"🔎 No site, busque por \"{busca}\"", "",
+        linhas.append("💬 Comenta QUERO que eu te mando o link no direct!")
+    linhas += ["📌 Salva pra não perder e manda pra quem precisa!",
+               f"🛒 Link na bio: achadosdogenio.com.br (busque \"{busca}\")", "",
                "Publicidade. Preço e estoque sujeitos a alteração.", "",
-               " ".join(["#publi", "#achadosdashopee", "#achadinhos", HASHTAGS.get(p["categoria"], "#promocao"),
-                         "#achadosdogenio"])]
+               " ".join(["#publi", "#achadinhos", "#achadosdashopee", HASHTAGS.get(p["categoria"], "#promocao")])]
     return "\n".join(linhas)
+
+
+def aplicar_variante(r, var):
+    """Monta o roteiro final conforme a variante sorteada (gancho e formato)."""
+    r = json.loads(json.dumps(r))
+    g = aprendizado.gancho(var["gancho"])
+    frases = []
+    for fr in r["frases"]:
+        if fr["cena"] == "hook" and g["fala"]:
+            fr.update({"fala": g["fala"], "legenda": g["fala"], "tela": g["tela"]})
+        if fr["cena"] == "problema" and var["formato"] == "direto":
+            continue
+        if fr["cena"] == "detalhe" and var["formato"] == "direto":
+            fr["itens"] = fr.get("itens", [])[:3]
+        frases.append(fr)
+    r["frases"] = frases
+    return r
+
+
+def linhas_capa(r):
+    """Capa com pouco texto: ate 2 linhas curtas."""
+    hook = next((f for f in r["frases"] if f["cena"] == "hook"), {})
+    linhas = r.get("capa_titulo") or hook.get("tela") or ["OLHA ISSO"]
+    return [l for l in linhas if not l.startswith("-")][:2]
 
 
 def main():
@@ -212,13 +243,31 @@ def main():
     ap.add_argument("--slot", type=int, default=0)
     ap.add_argument("--produto")
     ap.add_argument("--registrar", action="store_true", help="marca o produto como usado (producao)")
+    ap.add_argument("--variante", help='forca variante (teste), ex.: {"gancho":"descobri","voz":"antonio"}')
     a = ap.parse_args()
     data = dt.date.fromisoformat(a.data)
     p = selecao.selecionar(data, a.slot, a.produto)
-    r = carregar_roteiro(p)
+    r_base = carregar_roteiro(p)
     pasta = os.path.join(BASE, "saida", f"{data}_{HORARIOS[a.slot]}")
     os.makedirs(pasta, exist_ok=True)
-    info = video2.renderizar(p, r, os.path.join(pasta, "reel.mp4"), os.path.join(pasta, "capa.jpg"), falar_preco)
+    # teste de variacoes guiado pelos dados reais (aprendizado.py)
+    semente = f"{data}-{a.slot}-{p['id']}"
+    tem_problema = any(f["cena"] == "problema" for f in r_base["frases"])
+    var, motivo = aprendizado.sortear_variante(semente, tem_problema)
+    if a.variante:
+        var.update(json.loads(a.variante))
+    r = aplicar_variante(r_base, var)
+    vz = aprendizado.voz(var["voz"])
+    # materiais: cenas de contexto com licenca comercial (Pixabay) + foto oficial recortada
+    cenas = midia.buscar_cenas(r.get("broll") or midia.BROLL_CATEGORIA.get(p["categoria"], ["lifestyle"]), 2, semente)
+    try:
+        info = video3.renderizar(p, r, os.path.join(pasta, "reel.mp4"), os.path.join(pasta, "capa.jpg"), falar_preco,
+                                 voz=vz["voz"], taxa=vz["taxa"], cenas=cenas, capa_linhas=linhas_capa(r))
+    except Exception as e:  # seguranca: se o formato novo falhar, publica no formato anterior
+        print("formato descoberta falhou, usando o anterior:", e)
+        info = video2.renderizar(p, r, os.path.join(pasta, "reel.mp4"), os.path.join(pasta, "capa.jpg"), falar_preco)
+        info["formato_video"] = "classico_v2"
+    info["variante"], info["motivo_variante"] = var, motivo
     leg = legenda_instagram(p, r)
     with open(os.path.join(pasta, "legenda.txt"), "w", encoding="utf-8") as f:
         f.write(leg)
@@ -230,8 +279,9 @@ def main():
     with open(os.path.join(pasta, "meta.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)
     if a.registrar:
-        selecao.registrar_publicado(p, data, a.slot)
-    print(json.dumps({"pasta": pasta, "produto": p["id"], "categoria": p["categoria"], "duracao": info["duracao"]}, ensure_ascii=False))
+        selecao.registrar_publicado(p, data, a.slot, var)
+    print(json.dumps({"pasta": pasta, "produto": p["id"], "categoria": p["categoria"], "duracao": info["duracao"],
+                      "variante": var, "recorte": info.get("recorte"), "cenas": len(cenas)}, ensure_ascii=False))
 
 
 if __name__ == "__main__":

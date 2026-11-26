@@ -4,3 +4,4 @@ __pycache__/
 *.err
 # musicas Mixkit: baixadas no workflow (licenca nao permite redistribuir os arquivos)
 assets/musica/*.mp3
+.cache_midia/
