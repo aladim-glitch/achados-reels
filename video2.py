@@ -534,7 +534,8 @@ class Reel:
         y1 = 930 + (len(linhas) - 1) * 40
         colar(fr, t1, W / 2, y1, escala=ease_back((tl - 0.1) / 0.3))
         y2 = y1 + 110 + len(linhas) * 55
-        t2 = self.cached("cta2", lambda: pilula("LINK DA BIO", fonte("titulo", 112, 800), AMARELO, ESCURO, pad=(50, 16)))
+        botao = (fr_info or {}).get("botao") or "LINK DA BIO"
+        t2 = self.cached(("cta2", botao), lambda: pilula(botao, fonte("titulo", 112 if len(botao) <= 12 else 92, 800), AMARELO, ESCURO, pad=(50, 16)))
         colar(fr, t2, W / 2, y2, escala=ease_back((tl - 0.2) / 0.3) * pulso)
         # seta apontando para o perfil (bio fica no topo)
         sy = y2 + 170 - 26 * abs(math.sin(tl * 5))

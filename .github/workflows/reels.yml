@@ -37,6 +37,7 @@ jobs:
       - name: Gerar videos
         env:
           TZ: America/Sao_Paulo
+          CTA_COMENTARIO: ${{ vars.CTA_COMENTARIO }}
         run: |
           DATA="${{ github.event.inputs.data }}"; [ -z "$DATA" ] && DATA=$(date +%F)
           for SLOT in 0 1 2; do python main.py --data "$DATA" --slot $SLOT --registrar; done

@@ -151,8 +151,21 @@ CTAS = [
 ]
 
 
+# "Comente QUERO": o cenario 3 do Make responde no direct com o link do produto.
+# Liga com a variavel CTA_COMENTARIO=1 (no GitHub: Settings > Variables) somente depois que o cenario 3 estiver ativo.
+CTA_QUERO = {"fala": "Comenta QUERO que eu te mando o link no direct!",
+             "legenda": "Comenta QUERO que eu te mando o link no direct!",
+             "tela": ["COMENTA", "QUERO"], "botao": "LINK NO DIRECT"}
+
+
+def cta_comentario_ligado():
+    return os.environ.get("CTA_COMENTARIO", "").strip() == "1"
+
+
 def cta_padrao(p):
     import hashlib
+    if cta_comentario_ligado():
+        return CTA_QUERO
     return CTAS[int(hashlib.md5(str(p["id"]).encode()).hexdigest(), 16) % len(CTAS)]
 
 
@@ -178,6 +191,8 @@ def legenda_instagram(p, r):
     for b in r.get("beneficios", []):
         linhas.append(f"✅ {b}")
     busca = r.get("busca") or " ".join(curto.split()[:3]).lower()
+    if cta_comentario_ligado():
+        linhas += ["", "💬 Comenta QUERO que eu te mando o link no direct!"]
     linhas += ["", "🛒 Garanta o seu: acesse o link da bio", f"🔎 No site, busque por \"{busca}\"", "",
                "Publicidade. Preço e estoque sujeitos a alteração.", "",
                " ".join(["#publi", "#achadosdashopee", "#achadinhos", HASHTAGS.get(p["categoria"], "#promocao"),
