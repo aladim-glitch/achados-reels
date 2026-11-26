@@ -1,5 +1,5 @@
 # Renderiza os 3 Reels do dia e entrega ao Make (que publica nos horarios 08h/12h/19h).
-# ATENCAO: o agendamento (schedule) fica desligado ate a aprovacao do video de teste.
+# Agendamento diario ligado (aprovado em 2026-11-25).
 name: Reels diarios
 
 on:
@@ -8,8 +8,8 @@ on:
       data:
         description: "Data (AAAA-MM-DD); vazio = hoje"
         required: false
-  # schedule:
-  #   - cron: "0 9 * * *"   # 06:00 em Brasilia: gera os 3 videos do dia
+  schedule:
+    - cron: "0 9 * * *"   # 06:00 em Brasilia: gera os 3 videos do dia
 
 permissions:
   contents: write
