@@ -1,0 +1,22 @@
+{
+ "capa_titulo": ["KIT PRESENTE", "RELÓGIO", "+ CORRENTE"],
+ "titulo_tela": "Kit relógio + corrente",
+ "busca": "relógio corrente cruz",
+ "beneficios": ["Relógio + corrente com cruz + pulseira", "Visual dourado", "Já vem na caixa: pronto pra presentear"],
+ "views": {"principal": null, "relogio": [0.08, 0.2, 0.5, 0.62], "cruz": [0.5, 0.4, 0.76, 0.78], "pulseira": [0.68, 0.22, 0.98, 0.8]},
+ "frases": [
+  {"cena": "hook", "tela": ["PRESENTE", "RESOLVIDO!"], "fala": "Presente de fim de ano resolvido!",
+   "legenda": "Presente de fim de ano resolvido!"},
+  {"cena": "problema", "itens": ["Sem ideia de presente", "Orçamento apertado"],
+   "fala": "Sem ideia do que dar e com o orçamento apertado?",
+   "legenda": "Sem ideia do que dar e com o orçamento apertado?"},
+  {"cena": "solucao", "rotulo": "A SOLUÇÃO", "tela": ["KIT 3 PEÇAS"], "sub": "Relógio + corrente + pulseira",
+   "fala": "Esse kit vem com relógio, corrente com cruz e pulseira.",
+   "legenda": "Kit com relógio, corrente com cruz e pulseira."},
+  {"cena": "detalhe", "itens": [["relogio", "Relógio dourado"], ["cruz", "Corrente com cruz"], ["pulseira", "Pulseira"], ["principal", "Vem na caixa"]],
+   "fala": "Tudo no visual dourado, e já vem na caixa, pronto pra presentear.",
+   "legenda": "Visual dourado e já vem na caixa, pronto pra presentear."},
+  {"cena": "preco"},
+  {"cena": "cta", "fala": "Confira no link da bio!", "legenda": "Confira no link da bio!"}
+ ]
+}

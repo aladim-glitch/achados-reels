@@ -118,7 +118,10 @@ def titulo_curto(nome, max_chars=24):
         if len(res) + len(w) + (1 if res else 0) > max_chars:
             break
         res = f"{res} {w}".strip()
-    return res or nome[:max_chars]
+    pal = res.split()
+    while pal and (not re.search(r"\w", pal[-1]) or pal[-1].lower() in {"de", "da", "do", "e", "com", "para", "pra"}):
+        pal.pop()
+    return " ".join(pal) or nome[:max_chars]
 
 
 def roteiro_auto(p):
