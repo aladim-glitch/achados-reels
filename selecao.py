@@ -12,6 +12,7 @@ import csv
 import datetime as dt
 import json
 import os
+import urllib.parse
 import urllib.request
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -26,6 +27,10 @@ CATEGORIAS = [
     "Automotivo", "Mercado",
 ]
 UA = {"User-Agent": "Mozilla/5.0 (achados-reels)"}
+# ID de afiliado da Shopee (publico: aparece em todo link de afiliado) e sub_id que separa
+# os cliques vindos dos Reels/Stories/direct dos cliques do site no painel de afiliados.
+AFILIADO_ID = os.environ.get("SHOPEE_AFILIADO_ID", "18377480689")
+SUB_ID = "reels"
 
 
 def _get(url, timeout=20):
@@ -48,6 +53,17 @@ def carregar_site():
     """Catalogo ao vivo do site: id -> (preco, preco_original, desconto, link)."""
     dados = json.loads(_get(SITE_JSON).decode("utf-8"))
     return {str(p[0]): {"preco": p[2], "original": p[3], "desconto": p[4], "link": p[7]} for p in dados}
+
+
+def link_afiliado(link, sub_id=SUB_ID):
+    """Devolve o link shope.ee/an_redir com affiliate_id e sub_id corretos.
+    Sem affiliate_id a Shopee abre o produto sem atribuir o clique ao afiliado."""
+    partes = urllib.parse.urlsplit(link)
+    origem = urllib.parse.parse_qs(partes.query).get("origin_link", [""])[0]
+    if partes.netloc != "shope.ee" or partes.path != "/an_redir" or not origem:
+        raise ValueError(f"link fora do padrao an_redir: {link}")
+    q = urllib.parse.urlencode({"origin_link": origem, "affiliate_id": AFILIADO_ID, "sub_id": sub_id})
+    return f"https://shope.ee/an_redir?{q}"
 
 
 def carregar_publicados():
@@ -111,7 +127,7 @@ def selecionar(data, slot, forcar_id=None):
         p["preco_oferta"] = float(v["preco"])
         p["preco_original"] = float(v["original"] or p["preco_original"])
         p["desconto_percentual"] = int(v["desconto"] or p["desconto_percentual"])
-        p["link_feed"] = v["link"]
+        p["link_feed"] = link_afiliado(v["link"])
         p["nota_selecao"] = round(nota, 2)
         return p
     raise RuntimeError("Nenhum produto disponivel para esta categoria/horario")
