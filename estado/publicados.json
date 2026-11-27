@@ -58,5 +58,50 @@
    "formato": "direto",
    "extra": true
   }
+ },
+ {
+  "id": "40181910573",
+  "data": "2026-11-27",
+  "slot": 0,
+  "categoria": "Bebês e crianças",
+  "variante": {
+   "gancho": "usaria",
+   "voz": "thalita",
+   "formato": "direto",
+   "edicao": "media",
+   "cta": "envia",
+   "trilha": "mixkit-801",
+   "duracao": "media"
+  }
+ },
+ {
+  "id": "58267881346",
+  "data": "2026-11-27",
+  "slot": 1,
+  "categoria": "Eletrônicos",
+  "variante": {
+   "gancho": "menos_de",
+   "voz": "thalita",
+   "formato": "direto",
+   "edicao": "media",
+   "cta": "envia",
+   "trilha": "mixkit-801",
+   "duracao": "media"
+  }
+ },
+ {
+  "id": "23098847715",
+  "data": "2026-11-27",
+  "slot": 2,
+  "categoria": "Games e informática",
+  "variante": {
+   "gancho": "menos_de",
+   "voz": "thalita",
+   "formato": "direto",
+   "edicao": "media",
+   "cta": "quero",
+   "trilha": "mixkit-801",
+   "duracao": "curta"
+  }
  }
 ]
