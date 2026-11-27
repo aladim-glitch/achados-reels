@@ -683,7 +683,7 @@ def mixar_audio(partes, pasta, total, musica, cortes):
     for i, (_, p) in enumerate(partes):
         ms = int(p * 1000)
         f += f"[{i}:a]aresample=48000,aformat=channel_layouts=stereo,adelay={ms}|{ms}[v{i}];"
-    f += "".join(f"[v{i}]" for i in range(n)) + f"amix=inputs={n}:normalize=0,apad,atrim=0:{total:.3f},volume=1.5,asplit=2[voz][sc];"
+    f += "".join(f"[v{i}]" for i in range(n)) + f"amix=inputs={n}:normalize=0:duration=longest,apad=whole_dur={total:.3f},atrim=0:{total:.3f},volume=1.5,asplit=2[voz][sc];"
     f += f"[{im}:a]aresample=48000,aformat=channel_layouts=stereo,atrim=0:{total:.3f},volume=0.42,afade=t=in:d=0.4,afade=t=out:st={total - 1.2:.3f}:d=1.2[mus];"
     f += "[mus][sc]sidechaincompress=threshold=0.02:ratio=6:attack=8:release=300[musd];"
     sons = [(tc, "w") for tc, tipo in cortes if tipo in ("whip", "flash")] + [(tc, "d") for tc, tipo in cortes if tipo == "preco"]

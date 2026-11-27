@@ -1,0 +1,24 @@
+{
+ "capa_titulo": ["DISCOS", "VOADORES"],
+ "titulo_tela": "Lançador de discos",
+ "busca": "lançador de discos",
+ "seo": "brinquedo interativo lançador de discos com 5 discos coloridos",
+ "broll": ["cat playing", "kids playing outdoor", "cat jumping"],
+ "beneficios": ["Lançador com 5 discos coloridos", "Brinquedo interativo pra brincar junto", "Diversão fora das telas"],
+ "views": {"principal": null, "lancador": [0.58, 0.25, 1.0, 0.86], "discos": [0.0, 0.22, 0.66, 0.62], "cores": [0.0, 0.58, 0.9, 1.0]},
+ "frases": [
+  {"cena": "hook", "tela": ["DISCOS", "VOADORES!"], "fala": "Olha que brinquedo divertido pra brincar junto!",
+   "legenda": "Olha que brinquedo divertido pra brincar junto!"},
+  {"cena": "problema", "itens": ["Tédio em casa", "Muita tela"],
+   "fala": "Cansado de tédio em casa e de tanta tela?",
+   "legenda": "Cansado de tédio em casa e de tanta tela?"},
+  {"cena": "solucao", "rotulo": "OLHA ISSO", "tela": ["LANÇADOR", "DE DISCOS"], "sub": "Vem com 5 discos coloridos",
+   "fala": "É um lançador de discos, e vem com cinco discos coloridos.",
+   "legenda": "Lançador de discos com 5 discos coloridos."},
+  {"cena": "detalhe", "itens": [["lancador", "Fácil de segurar"], ["discos", "Discos coloridos"], ["cores", "Várias cores"]],
+   "fala": "É só mirar e lançar. Brincadeira interativa pra fazer junto.",
+   "legenda": "É só mirar e lançar. Brincadeira interativa pra fazer junto."},
+  {"cena": "preco"},
+  {"cena": "cta", "fala": "Confira no link da bio!", "legenda": "Confira no link da bio!"}
+ ]
+}

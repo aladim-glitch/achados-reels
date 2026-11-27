@@ -159,8 +159,10 @@ class ReelDescoberta:
     def cena_solucao(self, t, tl, dur, info):
         fr = self.fundo(t, 0)
         k = clamp(tl / max(dur, 0.1))
-        prod = self.produto((900, 900))
-        colar(fr, prod, W / 2 + 30 * math.sin(tl * 1.4), 1000 + 10 * math.sin(tl * 2.6),
+        # sem recorte a foto inteira vira cartao: menor e mais baixa para nao cobrir o titulo
+        alvo, y = ((900, 900), 1000) if self.recorte is not None else ((740, 740), 1130)
+        prod = self.produto(alvo)
+        colar(fr, prod, W / 2 + 30 * math.sin(tl * 1.4), y + 10 * math.sin(tl * 2.6),
               escala=(0.85 + 0.15 * ease_back(clamp(tl / 0.35))) * (1 + 0.08 * k), rot=2 * math.sin(tl * 1.7))
         rot_ = info.get("rotulo")
         if rot_:

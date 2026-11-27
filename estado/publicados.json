@@ -34,5 +34,29 @@
   "data": "2026-11-26",
   "slot": 2,
   "categoria": "Moda"
+ },
+ {
+  "id": "58269547436",
+  "data": "2026-11-26",
+  "slot": 2,
+  "categoria": "Eletrônicos",
+  "variante": {
+   "gancho": "descobri",
+   "voz": "thalita",
+   "formato": "direto",
+   "extra": true
+  }
+ },
+ {
+  "id": "58220942889",
+  "data": "2026-11-26",
+  "slot": 2,
+  "categoria": "Pet",
+  "variante": {
+   "gancho": "conhecer",
+   "voz": "antonio",
+   "formato": "direto",
+   "extra": true
+  }
  }
 ]

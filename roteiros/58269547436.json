@@ -1,0 +1,24 @@
+{
+ "capa_titulo": ["ELA DANÇA", "COM A MÚSICA"],
+ "titulo_tela": "Barra de LED rítmica",
+ "busca": "barra de led rítmica",
+ "seo": "luz de LED RGB que acende no ritmo da música pro seu setup",
+ "broll": ["gaming room lights", "neon lights room", "music party lights"],
+ "beneficios": ["Sensor de som: acende no ritmo da música", "Luz RGB colorida com vários modos", "Deixa o setup gamer ou a estante com outra cara"],
+ "views": {"principal": null, "setup": [0.0, 0.48, 0.5, 0.96], "barra": [0.5, 0.04, 0.9, 0.96], "decor": [0.0, 0.0, 0.48, 0.47]},
+ "frases": [
+  {"cena": "hook", "tela": ["ELA DANÇA", "COM A MÚSICA!"], "fala": "Essa luz dança no ritmo da sua música!",
+   "legenda": "Essa luz dança no ritmo da sua música!"},
+  {"cena": "problema", "itens": ["Setup sem graça", "Quarto apagado"],
+   "fala": "Setup sem graça e quarto todo apagado?",
+   "legenda": "Setup sem graça e quarto todo apagado?"},
+  {"cena": "solucao", "rotulo": "OLHA ISSO", "tela": ["BARRA DE LED", "RÍTMICA"], "sub": "Sensor de som + RGB",
+   "fala": "Essa barra de LED tem sensor de som e acende conforme a música toca.",
+   "legenda": "Barra de LED com sensor de som: acende conforme a música."},
+  {"cena": "detalhe", "itens": [["setup", "No setup gamer"], ["decor", "Na decoração"], ["barra", "Vários modos de luz"]],
+   "fala": "Fica linda no setup gamer, na estante, e tem vários modos de luz.",
+   "legenda": "No setup gamer, na estante e com vários modos de luz."},
+  {"cena": "preco"},
+  {"cena": "cta", "fala": "Confira no link da bio!", "legenda": "Confira no link da bio!"}
+ ]
+}
