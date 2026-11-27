@@ -152,18 +152,37 @@ class ReelDescoberta:
         return self.cached(("txt", chave, tuple(linhas), tam), faz)
 
     # ---------- cenas
+    def cartao(self, alvo):
+        """Foto oficial INTEIRA (produto reconhecivel), cantos arredondados."""
+        def faz():
+            f = self.foto
+            esc = min(alvo[0] / f.width, alvo[1] / f.height)
+            cw, ch = int(f.width * esc), int(f.height * esc)
+            out = Image.new("RGBA", (cw + 16, ch + 16), (0, 0, 0, 0))
+            ImageDraw.Draw(out).rounded_rectangle([0, 0, cw + 15, ch + 15], 44, fill=BRANCO)
+            m = Image.new("L", (cw, ch), 0)
+            ImageDraw.Draw(m).rounded_rectangle([0, 0, cw - 1, ch - 1], 38, fill=255)
+            reg = f.resize((cw, ch), Image.LANCZOS).convert("RGBA")
+            reg.putalpha(m)
+            out.alpha_composite(reg, (8, 8))
+            return out
+        return self.cached(("cartao", alvo), faz)
+
+    def produto_inteiro(self, alvo):
+        return self.produto(alvo) if self.recorte is not None else self.cartao(alvo)
+
+    def etiqueta_nome(self):
+        nome = (self.r.get("titulo_tela") or self.p["nome"]).strip()
+        return self.cached("nome", lambda: pilula(nome, fonte("texto", 44, 900), (255, 255, 255, 240), ESCURO, pad=(28, 10)))
+
     def cena_hook(self, t, tl, dur, info):
-        # impacto: produto em tela cheia com "soco" de zoom + gancho no topo (area segura)
-        soco = 1.30 - 0.25 * ease_back(clamp(tl / 0.45))
-        if self.recorte is not None and tl > dur * 0.55:
-            fr = self.estudio.copy()
-            colar(fr, self.produto((1000, 1000)), W / 2, 1030, escala=1.0 + 0.05 * clamp((tl - dur * 0.55) / 0.8),
-                  rot=1.5 * math.sin(tl * 3))
-        else:
-            fr = self.tela_cheia("principal", clamp(tl / max(dur, 0.1)), z0=soco, z1=soco + 0.04)
-        self.leitura(fr, base=True)
+        # impacto com o produto INTEIRO e reconhecivel desde o 1o quadro ("soco" de zoom) + gancho
+        soco = 1.15 - 0.15 * ease_back(clamp(tl / 0.45))
+        fr = self.estudio.copy()
+        colar(fr, self.produto_inteiro((860, 760)), W / 2, 1150 + 8 * math.sin(tl * 3), escala=soco, rot=1.2 * math.sin(tl * 2.5))
+        self.leitura(fr, base=False)
         linhas = info.get("tela") or ["OLHA ISSO!"]
-        colar(fr, self.texto("hook", linhas, 116), W / 2, 470 + (len(linhas) - 1) * 48, escala=ease_back(clamp(tl / 0.22)))
+        colar(fr, self.texto("hook", linhas, 108), W / 2, 530 + (len(linhas) - 1) * 44, escala=ease_back(clamp(tl / 0.22)))
         return fr
 
     def cena_problema(self, t, tl, dur, info):
@@ -214,12 +233,8 @@ class ReelDescoberta:
         return fr
 
     def cena_preco(self, t, tl, dur, info):
-        if self.recorte is not None:
-            fr = self.estudio.copy()
-            colar(fr, self.produto((900, 820)), W / 2, 760 + 8 * math.sin(tl * 3), escala=0.96 + 0.04 * ease_back(clamp(tl / 0.3)))
-        else:
-            fr = self.tela_cheia("principal", clamp(tl / max(dur, 0.1)), 1.08, 1.14)
-            self.leitura(fr, topo=False, base=True)
+        fr = self.estudio.copy()
+        colar(fr, self.produto_inteiro((860, 680)), W / 2, 780 + 8 * math.sin(tl * 3), escala=0.96 + 0.04 * ease_back(clamp(tl / 0.3)))
         colar(fr, self.selo, W / 2 + 300, 470, escala=ease_back(clamp((tl - 0.25) / 0.3)), rot=-12)
         de = self.cached("de", lambda: texto_img([f"De {brl(self.p['preco_original'])}"], fonte("texto", 54, 800), cor=(255, 236, 222)))
         y = 1170
@@ -231,12 +246,8 @@ class ReelDescoberta:
         return fr
 
     def cena_cta(self, t, tl, info):
-        if self.recorte is not None:
-            fr = self.estudio.copy()
-            colar(fr, self.produto((760, 640)), W / 2, 620 + 8 * math.sin(tl * 3), escala=0.92 + 0.08 * ease_back(clamp(tl / 0.3)))
-        else:
-            fr = self.tela_cheia("principal", 1.0, 1.15, 1.15)
-            fr.alpha_composite(Image.new("RGBA", (W, H), (0, 0, 0, 120)))
+        fr = self.estudio.copy()
+        colar(fr, self.produto_inteiro((720, 600)), W / 2, 660 + 8 * math.sin(tl * 3), escala=0.92 + 0.08 * ease_back(clamp(tl / 0.3)))
         linhas = info.get("tela") or ["CONFIRA"]
         colar(fr, self.texto("cta", linhas, 112, [BRANCO, AMARELO]), W / 2, 1080, escala=ease_back(clamp((tl - 0.05) / 0.28)))
         botao = info.get("botao") or "LINK NA BIO"
@@ -286,6 +297,9 @@ class ReelDescoberta:
         else:
             img = self.cena_cta(t, tl, atual)
         img.alpha_composite(self._header)
+        if c in ("hook", "problema", "detalhe", "preco"):
+            # nome do produto sempre visivel: quem assiste sabe o que esta sendo anunciado
+            colar(img, self.etiqueta_nome(), W / 2, 360)
         if c not in ("cta", "preco"):
             self.legenda(img, t, blocos)
         for (tc, tipo) in cortes:
@@ -303,11 +317,8 @@ class ReelDescoberta:
 
     def capa(self, linhas):
         """Capa: produto grande + ate 2 linhas curtas (dentro da area central do grid 4:5 tambem)."""
-        if self.recorte is not None:
-            fr = self.estudio.copy()
-            colar(fr, self.produto((1000, 980)), W / 2, 1080)
-        else:
-            fr = self.tela_cheia("principal", 0.0, 1.05, 1.05)
+        fr = self.estudio.copy()
+        colar(fr, self.produto_inteiro((960, 900)), W / 2, 1100)
         self.leitura(fr, base=False)
         colar(fr, self.texto("capa", linhas[:2], 128, [BRANCO, AMARELO]), W / 2, 520 + (min(len(linhas), 2) - 1) * 52, rot=-2)
         fr.alpha_composite(self._header)

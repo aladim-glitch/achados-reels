@@ -56,10 +56,24 @@ def brl(v):
     return "R$ " + f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
+MEDIDAS = {"polegadas", "polegada", "pol", "cm", "mm", "m", "ml", "l", "g", "kg", "w", "v", "unidades", "unidade", "un",
+           "peças", "peça", "pçs", "pcs", "pares", "par", "em", "x", "e", "de", "/", "+", "cores", "modelos"}
+
+
 def nome_curto(nome, max_palavras=6):
+    """Nome reconhecivel do produto: pula numeros e medidas do inicio ('8.5 Polegadas 10.5 16 Prancheta...'
+    vira 'Prancheta De Desenho...'), preservando 'Kit' quando houver."""
     n = re.split(r"[,|\-–(]", nome)[0]
-    n = re.sub(r"^\s*(kit\s+)?[\d/]+\s*(unidades?|peças?|pçs?|un)?\s*", lambda m: "Kit " if m.group(1) else "", n, flags=re.I)
     pal = n.split()
+    kit = bool(pal) and pal[0].lower() == "kit"
+    if kit:
+        pal = pal[1:]
+    while pal and (re.fullmatch(r"[\d.,/x+%]+[a-zA-Z]{0,3}", pal[0]) or pal[0].lower() in MEDIDAS):
+        pal = pal[1:]
+    if not pal:  # nome so de numeros/medidas: usa o original
+        pal = n.split()
+    if kit:
+        pal = ["Kit"] + pal
     # tira conectores/simbolos soltos no fim (ex.: "Relogio Moderno +", "Kit de")
     while pal and (not re.search(r"\w", pal[-1]) or pal[-1].lower() in {"de", "da", "do", "e", "com", "para", "pra", "+"}):
         pal.pop()
@@ -123,7 +137,8 @@ def titulo_curto(nome, max_chars=24):
             break
         res = f"{res} {w}".strip()
     pal = res.split()
-    while pal and (not re.search(r"\w", pal[-1]) or pal[-1].lower() in {"de", "da", "do", "e", "com", "para", "pra"}):
+    while pal and (not re.search(r"\w", pal[-1]) or re.fullmatch(r"[\d.,/x]+", pal[-1])
+                   or pal[-1].lower() in {"de", "da", "do", "e", "com", "para", "pra"}):
         pal.pop()
     return " ".join(pal) or nome[:max_chars]
 
@@ -193,6 +208,13 @@ def carregar_roteiro(p):
     return r
 
 
+def nome_limpo(nome, max_chars=110):
+    """Nome completo do anuncio, sem lixo de SEO do vendedor, para identificar o produto na legenda."""
+    n = re.sub(r"\*\*.*?\*\*", "", nome)
+    n = re.sub(r"\s+", " ", n).strip(" -,|")
+    return n if len(n) <= max_chars else n[:max_chars].rsplit(" ", 1)[0] + "…"
+
+
 def legenda_instagram(p, r, cta_var=None):
     """Descricao exclusiva por produto, com SEO do Instagram: nome do produto + Shopee + achadinho/oferta +
     categoria na 1a linha; beneficios antes do preco; chamada da variante; site; publicidade; ate 5 hashtags."""
@@ -200,7 +222,7 @@ def legenda_instagram(p, r, cta_var=None):
     busca = r.get("busca") or " ".join(curto.split()[:3]).lower()
     cat = p["categoria"].lower()
     seo = r.get("seo") or f"achadinho de {cat} em oferta na Shopee"
-    linhas = [f"{curto} na Shopee: {seo} 🧞", ""]
+    linhas = [f"{curto} na Shopee: {seo} 🧞", "", f"📦 Produto: {nome_limpo(p['nome'])}", ""]
     for b in r.get("beneficios", []):
         linhas.append(f"✅ {b}")
     linhas += [f"⭐ Nota {p['avaliacao']:.1f}".replace(".", ",") + " de 5 na Shopee",

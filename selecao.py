@@ -70,15 +70,23 @@ def validar_link(link, produto_id):
     """Validacao comercial: o link precisa redirecionar para o produto certo com o ID de afiliado
     (utm_source=an_<ID>), garantindo o rastreamento da comissao."""
     import http.client
+    import time
     u = urllib.parse.urlsplit(link)
-    try:
-        c = http.client.HTTPSConnection(u.netloc, timeout=15)
-        c.request("GET", f"{u.path}?{u.query}", headers=UA)
-        r = c.getresponse()
-        destino = r.getheader("Location") or ""
-        c.close()
-    except Exception as e:
-        return False, f"link nao respondeu: {e}"
+    erro = None
+    for tentativa in range(3):  # rede instavel nao deve derrubar um produto bom
+        try:
+            c = http.client.HTTPSConnection(u.netloc, timeout=20)
+            c.request("GET", f"{u.path}?{u.query}", headers=UA)
+            r = c.getresponse()
+            destino = r.getheader("Location") or ""
+            c.close()
+            erro = None
+            break
+        except Exception as e:
+            erro = e
+            time.sleep(3 * (tentativa + 1))
+    if erro:
+        return False, f"link nao respondeu: {erro}"
     if r.status not in (301, 302, 303, 307, 308):
         return False, f"link respondeu {r.status}"
     if str(produto_id) not in destino or f"an_{AFILIADO_ID}" not in destino:
