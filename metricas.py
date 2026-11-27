@@ -40,16 +40,28 @@ def chamar(caminho, **params):
         return None, msg
 
 
-def insights(media_id):
-    dados, erro = chamar(f"{media_id}/insights", metric=",".join(INSIGHTS))
-    if erro:
-        return {}, erro
+EXTRAS = ["follows", "profile_visits", "ig_reels_video_view_total_time"]  # nem toda conta/midia recebe estas
+
+
+def _ler(dados):
     res = {}
     for item in dados.get("data", []):
         vals = item.get("values") or []
         v = vals[0].get("value") if vals else item.get("total_value", {}).get("value")
-        nome = {"saved": "saved", "ig_reels_avg_watch_time": "avg_watch_ms"}.get(item["name"], item["name"])
+        nome = {"ig_reels_avg_watch_time": "avg_watch_ms", "ig_reels_video_view_total_time": "total_watch_ms"}.get(item["name"], item["name"])
         res[nome] = v
+    return res
+
+
+def insights(media_id):
+    dados, erro = chamar(f"{media_id}/insights", metric=",".join(INSIGHTS))
+    if erro:
+        return {}, erro
+    res = _ler(dados)
+    for extra in EXTRAS:  # uma por vez: se a Meta nao oferecer, ignora sem perder o resto
+        d, e = chamar(f"{media_id}/insights", metric=extra)
+        if not e:
+            res.update(_ler(d))
     return res, None
 
 
@@ -108,12 +120,15 @@ def gerar_relatorio(met):
         if not s:
             return "–"
         if s.get("views") is not None:
-            return f"{s['views']} views · {s.get('likes', 0)}♥ · {s.get('saved', 0)} salvos · {s.get('shares', 0)} compart."
+            ret = f" · {s['avg_watch_ms'] / 1000:.1f}s médios" if s.get("avg_watch_ms") else ""
+            seg = f" · +{s['follows']} seguid." if s.get("follows") else ""
+            return (f"{s['views']} views{ret} · {s.get('likes', 0)}♥ · {s.get('comments', 0)} coment. · "
+                    f"{s.get('saved', 0)} salvos · {s.get('shares', 0)} compart.{seg}")
         return f"{s.get('likes', 0)}♥ · {s.get('comments', 0)} coment."
 
     for mid, r in sorted(met.items(), key=lambda kv: kv[1].get("publicado_em", ""), reverse=True):
         v = r.get("variante") or {}
-        var = ", ".join(f"{k}={v[k]}" for k in ("gancho", "voz", "formato") if k in v) or "–"
+        var = ", ".join(f"{k}={v[k]}" for k in ("gancho", "cta", "voz", "formato", "edicao", "trilha") if k in v) or "–"
         lin.append(f"| [{r.get('produto') or mid}]({r.get('permalink')}) | {r.get('data', '')} | {r.get('hora_local', '')} | {var} | "
                    f"{fmt(r.get('24h'))} | {fmt(r.get('48h'))} | {fmt(r.get('72h'))} |")
     lin += ["", "## Média por variação", ""]

@@ -66,6 +66,26 @@ def link_afiliado(link, sub_id=SUB_ID):
     return f"https://shope.ee/an_redir?{q}"
 
 
+def validar_link(link, produto_id):
+    """Validacao comercial: o link precisa redirecionar para o produto certo com o ID de afiliado
+    (utm_source=an_<ID>), garantindo o rastreamento da comissao."""
+    import http.client
+    u = urllib.parse.urlsplit(link)
+    try:
+        c = http.client.HTTPSConnection(u.netloc, timeout=15)
+        c.request("GET", f"{u.path}?{u.query}", headers=UA)
+        r = c.getresponse()
+        destino = r.getheader("Location") or ""
+        c.close()
+    except Exception as e:
+        return False, f"link nao respondeu: {e}"
+    if r.status not in (301, 302, 303, 307, 308):
+        return False, f"link respondeu {r.status}"
+    if str(produto_id) not in destino or f"an_{AFILIADO_ID}" not in destino:
+        return False, f"redirecionamento sem produto/afiliado: {destino[:120]}"
+    return True, destino
+
+
 def carregar_publicados():
     if os.path.exists(PUBLICADOS):
         with open(PUBLICADOS, encoding="utf-8") as f:
@@ -150,6 +170,10 @@ def selecionar(data, slot, forcar_id=None):
 
     for nota, p, v in validos:
         if not imagem_ok(p["imagem"]):
+            continue
+        ok, detalhe = validar_link(link_afiliado(v["link"]), p["id"])
+        if not ok:
+            print("produto ignorado na validacao comercial:", p["id"], detalhe)
             continue
         p = dict(p)
         # preco e link sempre do site ao vivo (fonte mais recente)

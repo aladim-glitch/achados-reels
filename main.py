@@ -193,38 +193,46 @@ def carregar_roteiro(p):
     return r
 
 
-def legenda_instagram(p, r):
-    """Legenda otimizada para busca do Instagram: palavra-chave na 1a linha, beneficio antes do preco,
-    pedido de comentario/salvamento/compartilhamento, direcao para o site e 4 hashtags relevantes."""
+def legenda_instagram(p, r, cta_var=None):
+    """Descricao exclusiva por produto, com SEO do Instagram: nome do produto + Shopee + achadinho/oferta +
+    categoria na 1a linha; beneficios antes do preco; chamada da variante; site; publicidade; ate 5 hashtags."""
     curto = r.get("titulo_tela") or nome_curto(p["nome"])
     busca = r.get("busca") or " ".join(curto.split()[:3]).lower()
-    seo = r.get("seo") or f"achadinho da Shopee com {p['desconto_percentual']}% OFF"
-    linhas = [f"{curto}: {seo} 🧞", ""]
+    cat = p["categoria"].lower()
+    seo = r.get("seo") or f"achadinho de {cat} em oferta na Shopee"
+    linhas = [f"{curto} na Shopee: {seo} 🧞", ""]
     for b in r.get("beneficios", []):
         linhas.append(f"✅ {b}")
     linhas += [f"⭐ Nota {p['avaliacao']:.1f}".replace(".", ",") + " de 5 na Shopee",
-               f"💸 Hoje: {brl(p['preco_oferta'])} (antes {brl(p['preco_original'])})", ""]
-    if cta_comentario_ligado():
-        linhas.append("💬 Comenta QUERO que eu te mando o link no direct!")
-    linhas += ["📌 Salva pra não perder e manda pra quem precisa!",
-               f"🛒 Link na bio: achadosdogenio.com.br (busque \"{busca}\")", "",
-               "Publicidade. Preço e estoque sujeitos a alteração.", "",
-               " ".join(["#publi", "#achadinhos", "#achadosdashopee", HASHTAGS.get(p["categoria"], "#promocao")])]
+               f"💸 Oferta de hoje: {brl(p['preco_oferta'])} (antes {brl(p['preco_original'])}, {p['desconto_percentual']}% OFF)", ""]
+    if cta_var:
+        linhas.append(cta_var["legenda"])
+    linhas += [f"🛒 Link na bio: achadosdogenio.com.br (busque \"{busca}\")", "",
+               "Publicidade. Preço e estoque sujeitos a alteração.", ""]
+    tags = ["#publi", "#achadinhos", "#achadosdashopee", HASHTAGS.get(p["categoria"], "#promocao")]
+    if r.get("hashtag"):
+        tags.append(r["hashtag"])
+    linhas.append(" ".join(tags[:5]))
     return "\n".join(linhas)
 
 
-def aplicar_variante(r, var):
-    """Monta o roteiro final conforme a variante sorteada (gancho e formato)."""
+def aplicar_variante(r, var, p):
+    """Roteiro final conforme a variante: gancho (com dados reais), formato/duracao, ritmo de edicao e chamada."""
     r = json.loads(json.dumps(r))
-    g = aprendizado.gancho(var["gancho"])
+    fala, tela = aprendizado.texto_gancho(var["gancho"], p, r)
+    c = aprendizado.cta(var["cta"])
     frases = []
     for fr in r["frases"]:
-        if fr["cena"] == "hook" and g["fala"]:
-            fr.update({"fala": g["fala"], "legenda": g["fala"], "tela": g["tela"]})
+        if fr["cena"] == "hook" and fala:
+            fr.update({"fala": fala, "legenda": fala, "tela": tela})
         if fr["cena"] == "problema" and var["formato"] == "direto":
             continue
-        if fr["cena"] == "detalhe" and var["formato"] == "direto":
-            fr["itens"] = fr.get("itens", [])[:3]
+        if fr["cena"] == "detalhe":
+            itens = fr.get("itens", []) or [["principal", ""]]
+            # edicao rapida: mais closes (corte ~1 s); media: 2 closes (corte ~1,5-2 s)
+            fr["itens"] = itens[:4] if var.get("edicao") == "rapida" else itens[:2]
+        if fr["cena"] == "cta":
+            fr.update({"fala": c["fala"], "legenda": c["fala"], "tela": c["tela"], "botao": c["botao"]})
         frases.append(fr)
     r["frases"] = frases
     return r
@@ -252,23 +260,25 @@ def main():
     os.makedirs(pasta, exist_ok=True)
     # teste de variacoes guiado pelos dados reais (aprendizado.py)
     semente = f"{data}-{a.slot}-{p['id']}"
-    tem_problema = any(f["cena"] == "problema" for f in r_base["frases"])
-    var, motivo = aprendizado.sortear_variante(semente, tem_problema)
+    contexto = {"problema": any(f["cena"] == "problema" for f in r_base["frases"]), "preco": p["preco_oferta"]}
+    var, motivo = aprendizado.sortear_variante(semente, contexto)
     if a.variante:
         var.update(json.loads(a.variante))
-    r = aplicar_variante(r_base, var)
+    r = aplicar_variante(r_base, var, p)
     vz = aprendizado.voz(var["voz"])
-    # materiais: cenas de contexto com licenca comercial (Pixabay) + foto oficial recortada
+    trilha = os.path.join(BASE, "assets", "musica", f"{var['trilha']}.mp3")
+    # materiais: cenas de contexto com licenca comercial (Pixabay) + foto oficial (tela cheia / recorte)
     cenas = midia.buscar_cenas(r.get("broll") or midia.BROLL_CATEGORIA.get(p["categoria"], ["lifestyle"]), 2, semente)
     try:
         info = video3.renderizar(p, r, os.path.join(pasta, "reel.mp4"), os.path.join(pasta, "capa.jpg"), falar_preco,
-                                 voz=vz["voz"], taxa=vz["taxa"], cenas=cenas, capa_linhas=linhas_capa(r))
+                                 voz=vz["voz"], taxa=vz["taxa"], cenas=cenas, capa_linhas=linhas_capa(r),
+                                 musica=trilha if os.path.exists(trilha) else None)
     except Exception as e:  # seguranca: se o formato novo falhar, publica no formato anterior
         print("formato descoberta falhou, usando o anterior:", e)
         info = video2.renderizar(p, r, os.path.join(pasta, "reel.mp4"), os.path.join(pasta, "capa.jpg"), falar_preco)
         info["formato_video"] = "classico_v2"
     info["variante"], info["motivo_variante"] = var, motivo
-    leg = legenda_instagram(p, r)
+    leg = legenda_instagram(p, r, aprendizado.cta(var["cta"]))
     with open(os.path.join(pasta, "legenda.txt"), "w", encoding="utf-8") as f:
         f.write(leg)
     # Story do Reel: arte + link de afiliado original para a figurinha de link (colada no app)
@@ -279,7 +289,7 @@ def main():
     with open(os.path.join(pasta, "meta.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)
     if a.registrar:
-        selecao.registrar_publicado(p, data, a.slot, var)
+        selecao.registrar_publicado(p, data, a.slot, {**var, "duracao": "curta" if info["duracao"] <= 15 else "media"})
     print(json.dumps({"pasta": pasta, "produto": p["id"], "categoria": p["categoria"], "duracao": info["duracao"],
                       "variante": var, "recorte": info.get("recorte"), "cenas": len(cenas)}, ensure_ascii=False))
 

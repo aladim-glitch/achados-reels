@@ -88,8 +88,8 @@ def recortar_produto(foto):
     ok, frac = _mascara_ok(alpha)
     if not ok:
         return None, {"recorte": "rejeitado", "area": frac}
-    out = out.crop(out.getbbox())
-    return out, {"recorte": "ok", "area": frac}
+    bbox = out.getbbox()
+    return out.crop(bbox), {"recorte": "ok", "area": frac, "bbox": bbox}
 
 
 # ------------------------------------------------------------------ banco de videos (Pixabay)
