@@ -103,5 +103,50 @@
    "trilha": "mixkit-801",
    "duracao": "curta"
   }
+ },
+ {
+  "id": "58252248972",
+  "data": "2026-11-28",
+  "slot": 0,
+  "categoria": "Esporte e lazer",
+  "variante": {
+   "gancho": "usaria",
+   "voz": "francisca",
+   "formato": "direto",
+   "edicao": "rapida",
+   "cta": "salva",
+   "trilha": "mixkit-1147",
+   "duracao": "curta"
+  }
+ },
+ {
+  "id": "54456755060",
+  "data": "2026-11-28",
+  "slot": 1,
+  "categoria": "Pet",
+  "variante": {
+   "gancho": "menos_de",
+   "voz": "francisca",
+   "formato": "direto",
+   "edicao": "rapida",
+   "cta": "quero",
+   "trilha": "mixkit-288",
+   "duracao": "curta"
+  }
+ },
+ {
+  "id": "58264990604",
+  "data": "2026-11-28",
+  "slot": 2,
+  "categoria": "Papelaria e hobbies",
+  "variante": {
+   "gancho": "parece_caro",
+   "voz": "thalita",
+   "formato": "direto",
+   "edicao": "media",
+   "cta": "salva",
+   "trilha": "mixkit-837",
+   "duracao": "curta"
+  }
  }
 ]
