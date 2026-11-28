@@ -47,11 +47,13 @@ Requer Python 3.12, FFmpeg e `pip install -r requirements.txt`.
 `roteiros/<id>.json`: gancho, problema, solução, closes (`views` = recortes da foto), capa, `seo`, `broll`
 (termos de busca de cenas). Preço e desconto NUNCA ficam no roteiro: são lidos ao vivo.
 
-## Padrão de comunicação
-- Sem mencionar afiliados/comissões. Publicidade identificada: selo "Publicidade" no vídeo, "Publicidade." e `#publi` na legenda.
-- Fechamento "Comenta QUERO" (variável `CTA_COMENTARIO=1`); respostas no direct são manuais.
-- Legenda: palavra-chave na 1ª linha, benefícios antes do preço, pedido de salvar/compartilhar, site e 4 hashtags.
-- Links de afiliado originais preservados (site e data store do Make).
+## Padrão de comunicação (todas as lojas: Shopee e Magalu)
+- Legenda comercial e objetiva: abertura atrativa, produto + benefício real, economia (de/por), chamada da variante,
+  "Confira essa e outras ofertas no nosso site: achadosdogenio.com.br" e "Link na bio!".
+- **Nunca** explicar afiliação, comissão ou programas (Influenciador Magalu, afiliados Shopee) na legenda.
+  Identificação publicitária objetiva: `#publi` na legenda + selo "Publicidade" no vídeo.
+- Hashtags: `#publi #AchadosDoGenio #<Loja> #Ofertas #Achadinhos #<Categoria>`.
+- Rastreamento conferido antes de publicar: Shopee (`utm_source=an_18377480689`) e Magalu (`promoter_id=3833729`).
 
 ## Licenças
 - Músicas: Mixkit Stock Music Free License (baixadas no workflow, não redistribuídas aqui).

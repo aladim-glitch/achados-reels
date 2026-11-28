@@ -49,7 +49,7 @@ CTAS = [
     {"id": "compraria", "fala": "Você compraria? Comenta aqui!", "tela": ["VOCÊ", "COMPRARIA?"], "botao": "COMENTA AQUI",
      "legenda": "🤔 Você compraria? Comenta aqui!"},
     {"id": "site", "fala": "Mais ofertas no achados do gênio ponto com ponto bê erre!", "tela": ["MAIS OFERTAS", "NO SITE"],
-     "botao": "ACHADOSDOGENIO.COM.BR", "legenda": "🛒 Mais ofertas em achadosdogenio.com.br"},
+     "botao": "ACHADOSDOGENIO.COM.BR", "legenda": "🛍️ Tem muito mais achadinho esperando por você!"},
 ]
 TRILHAS = [{"id": t} for t in ("mixkit-288", "mixkit-801", "mixkit-1147", "mixkit-837", "mixkit-158")]
 

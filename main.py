@@ -215,26 +215,39 @@ def nome_limpo(nome, max_chars=110):
     return n if len(n) <= max_chars else n[:max_chars].rsplit(" ", 1)[0] + "…"
 
 
-def legenda_instagram(p, r, cta_var=None):
-    """Descricao exclusiva por produto, com SEO do Instagram: nome do produto + Shopee + achadinho/oferta +
-    categoria na 1a linha; beneficios antes do preco; chamada da variante; site; publicidade; ate 5 hashtags."""
+# Padrao de legenda (todas as lojas): comercial e objetiva. NUNCA explicar afiliacao/comissao/programas
+# na legenda; a identificacao publicitaria e o #publi (+ selo "Publicidade" no video).
+ABERTURA = {
+    "Casa e cozinha": "Olha esse achadinho para sua casa!", "Beleza e saúde": "Achadinho de beleza que vale cada centavo!",
+    "Moda": "Olha esse achadinho de moda!", "Bebês e crianças": "Achadinho que facilita a rotina com as crianças!",
+    "Eletrônicos": "Olha esse achadinho de tecnologia!", "Games e informática": "Achadinho para deixar seu setup mais completo!",
+    "Esporte e lazer": "Achadinho para quem curte se movimentar!", "Pet": "Olha esse achadinho para o seu pet!",
+    "Papelaria e hobbies": "Achadinho para quem ama criar e organizar!", "Automotivo": "Achadinho para o seu carro!",
+    "Mercado": "Achadinho de mercado com preço baixo!",
+}
+TAG_CATEGORIA = {
+    "Casa e cozinha": "#Casa", "Beleza e saúde": "#Beleza", "Moda": "#Moda", "Bebês e crianças": "#Maternidade",
+    "Eletrônicos": "#Tecnologia", "Games e informática": "#SetupGamer", "Esporte e lazer": "#Esporte", "Pet": "#Pets",
+    "Papelaria e hobbies": "#Papelaria", "Automotivo": "#Carros", "Mercado": "#Economia",
+}
+
+
+def legenda_instagram(p, r, cta_var=None, loja="Shopee"):
+    """Legenda atrativa e profissional: abertura, produto + beneficio real, economia, chamada, site e hashtags."""
     curto = r.get("titulo_tela") or nome_curto(p["nome"])
-    busca = r.get("busca") or " ".join(curto.split()[:3]).lower()
-    cat = p["categoria"].lower()
-    seo = r.get("seo") or f"achadinho de {cat} em oferta na Shopee"
-    linhas = [f"{curto} na Shopee: {seo} 🧞", "", f"📦 Produto: {nome_limpo(p['nome'])}", ""]
-    for b in r.get("beneficios", []):
-        linhas.append(f"✅ {b}")
-    linhas += [f"⭐ Nota {p['avaliacao']:.1f}".replace(".", ",") + " de 5 na Shopee",
-               f"💸 Oferta de hoje: {brl(p['preco_oferta'])} (antes {brl(p['preco_original'])}, {p['desconto_percentual']}% OFF)", ""]
+    abertura = r.get("abertura") or ABERTURA.get(p["categoria"], "Olha esse achadinho!")
+    if r.get("beneficios"):
+        b = r["beneficios"][0].rstrip(".")
+        corpo = f"{curto}: {b[0].lower() + b[1:]}."
+    else:
+        corpo = f"{curto} com {p['desconto_percentual']}% de desconto na {loja}."
+    linhas = [f"🔥 {abertura}", corpo,
+              f"💸 De {brl(p['preco_original'])} por {brl(p['preco_oferta'])}.", ""]
     if cta_var:
-        linhas.append(cta_var["legenda"])
-    linhas += [f"🛒 Link na bio: achadosdogenio.com.br (busque \"{busca}\")", "",
-               "Publicidade. Preço e estoque sujeitos a alteração.", ""]
-    tags = ["#publi", "#achadinhos", "#achadosdashopee", HASHTAGS.get(p["categoria"], "#promocao")]
-    if r.get("hashtag"):
-        tags.append(r["hashtag"])
-    linhas.append(" ".join(tags[:5]))
+        linhas += [cta_var["legenda"], ""]
+    linhas += ["🛒 Confira essa e outras ofertas no nosso site:", "achadosdogenio.com.br", "🔗 Link na bio!", ""]
+    tags = ["#publi", "#AchadosDoGenio", f"#{loja}", "#Ofertas", "#Achadinhos", TAG_CATEGORIA.get(p["categoria"], "#Promocao")]
+    linhas.append(" ".join(tags))
     return "\n".join(linhas)
 
 
